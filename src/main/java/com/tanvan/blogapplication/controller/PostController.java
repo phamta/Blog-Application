@@ -11,9 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/posts")
+@CrossOrigin
 public class PostController {
 
     @Autowired
@@ -24,15 +26,16 @@ public class PostController {
     public ResponseEntity<?> createPostWithImage(
             @RequestParam("userId") Long userId,
             @RequestParam("title") String title,
-            @RequestParam("content") String content,
             @RequestParam(value = "image", required = false) MultipartFile imageFile) {
         try {
-            Post post = postService.createPostWithImage(userId, title, content, imageFile);
-            return ResponseEntity.ok(post);
+            Post post = postService.createPostWithImage(userId, title, imageFile);
+            return ResponseEntity.ok(Map.of("message", "Bài đăng đã được tạo", "postId", post.getId()));
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Lỗi khi tải ảnh lên"));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         }
     }
 

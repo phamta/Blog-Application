@@ -4,6 +4,7 @@ import com.tanvan.blogapplication.model.Post;
 import com.tanvan.blogapplication.model.User;
 import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,8 @@ public class PostService {
     private UserRepository userRepository;
 
     // Tạo bài viết với ảnh
-    public Post createPostWithImage(Long userId, String title, String content, MultipartFile imageFile) throws IOException {
+//    @Transactional
+    public Post createPostWithImage(Long userId, String title, MultipartFile imageFile) throws IOException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found");
