@@ -1,5 +1,6 @@
 package com.tanvan.blogapplication.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tanvan.blogapplication.model.User;
 import com.tanvan.blogapplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin
+@JsonIgnoreProperties({"posts"})
 public class UserController {
 
     @Autowired
@@ -24,10 +26,13 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping("user/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable long id) {
-        User user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable long id) {
+        Optional<User> userOptional = userService.getUserById(id);
+        if (userOptional.isPresent()) {
+            return ResponseEntity.ok(userOptional.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 
     @PostMapping("/add")

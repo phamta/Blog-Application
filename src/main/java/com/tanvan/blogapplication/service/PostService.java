@@ -24,7 +24,6 @@ public class PostService {
     private UserRepository userRepository;
 
     // Tạo bài viết với ảnh
-//    @Transactional
     public Post createPostWithImage(Long userId, String title, MultipartFile imageFile) throws IOException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {

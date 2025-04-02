@@ -1,5 +1,6 @@
 package com.tanvan.blogapplication.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -36,4 +38,9 @@ public class User {
     @Lob
     @Getter @Setter
     private byte[] imageData;
+
+    // Danh sách bài viết của user
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Post> posts;
 }

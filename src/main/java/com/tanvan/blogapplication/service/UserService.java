@@ -1,6 +1,8 @@
 package com.tanvan.blogapplication.service;
 
+import com.tanvan.blogapplication.model.Post;
 import com.tanvan.blogapplication.model.User;
+import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,17 +18,27 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private final PostService postService;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.postService = new PostService();
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public User getUserById(long id) {
-        System.out.println("Find");
-        return userRepository.findById(id).orElse(null);
+    public Optional<User> getUserById(long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            List<Post> posts = postService.getPostsByUserId(id);
+            user.setPosts(posts); // Gán danh sách bài viết vào user
+            return Optional.of(user);
+        }
+        return Optional.empty();
     }
 
     public User createUser(User user, MultipartFile image) {
