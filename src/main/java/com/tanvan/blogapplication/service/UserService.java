@@ -4,6 +4,7 @@ import com.tanvan.blogapplication.model.Post;
 import com.tanvan.blogapplication.model.User;
 import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,15 +22,16 @@ public class UserService {
     @Autowired
     private final PostService postService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PostService postService) {
         this.userRepository = userRepository;
-        this.postService = new PostService();
+        this.postService = postService;
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
+    @Transactional
     public Optional<User> getUserById(long id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {

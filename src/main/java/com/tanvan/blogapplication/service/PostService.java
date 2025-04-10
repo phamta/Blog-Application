@@ -50,7 +50,7 @@ public class PostService {
 
     // Lấy ảnh theo postId
     public byte[] getPostImage(Long postId) {
-        Optional<Post> postOptional = postRepository.findById(Math.toIntExact(postId));
+        Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty() || postOptional.get().getImageData() == null) {
             throw new RuntimeException("Image not found");
         }
@@ -62,6 +62,7 @@ public class PostService {
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found");
         }
+        System.out.println("User " + userId );
         return postRepository.findByAuthor(userOptional.get());
     }
 }
