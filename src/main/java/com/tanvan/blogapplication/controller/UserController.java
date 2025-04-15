@@ -26,6 +26,15 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        Optional<User> user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Đăng nhập thất bại");
+    }
+
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id) {
         Optional<User> userOptional = userService.getUserById(id);

@@ -2,7 +2,6 @@ package com.tanvan.blogapplication.service;
 
 import com.tanvan.blogapplication.model.Post;
 import com.tanvan.blogapplication.model.User;
-import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,15 @@ public class UserService {
         this.userRepository = userRepository;
         this.postService = postService;
     }
+
+    public Optional<User> login(String username, String password) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent() && user.get().getPassword().equals(password)) {
+            return user;
+        }
+        return Optional.empty();
+    }
+
 
     public List<User> findAll() {
         return userRepository.findAll();
