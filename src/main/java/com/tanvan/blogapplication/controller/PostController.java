@@ -1,6 +1,6 @@
 package com.tanvan.blogapplication.controller;
 
-import com.tanvan.blogapplication.model.Post;
+import com.tanvan.blogapplication.entity.Post;
 import com.tanvan.blogapplication.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

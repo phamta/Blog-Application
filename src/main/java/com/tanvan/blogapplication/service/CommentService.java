@@ -1,8 +1,8 @@
 package com.tanvan.blogapplication.service;
 
-import com.tanvan.blogapplication.model.Comment;
-import com.tanvan.blogapplication.model.Post;
-import com.tanvan.blogapplication.model.User;
+import com.tanvan.blogapplication.entity.Comment;
+import com.tanvan.blogapplication.entity.Post;
+import com.tanvan.blogapplication.entity.User;
 
 import com.tanvan.blogapplication.repository.CommentRepository;
 import com.tanvan.blogapplication.repository.PostRepository;

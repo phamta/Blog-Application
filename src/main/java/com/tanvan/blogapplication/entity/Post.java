@@ -1,8 +1,7 @@
-package com.tanvan.blogapplication.model;
+package com.tanvan.blogapplication.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -48,5 +47,16 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Comment> comments;
+
+    @Transient
+    private int likeCount;
+
+    @Transient
+    private boolean isLike;
+
+    // Getter của likeCount có thể tính dựa trên số lượng like được load
+    public int getLikeCount() {
+        return (likes != null) ? likes.size() : 0;
+    }
 }
 

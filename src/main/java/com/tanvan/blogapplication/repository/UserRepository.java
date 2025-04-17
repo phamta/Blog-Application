@@ -1,6 +1,6 @@
 package com.tanvan.blogapplication.repository;
 
-import com.tanvan.blogapplication.model.User;
+import com.tanvan.blogapplication.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

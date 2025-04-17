@@ -1,4 +1,4 @@
-package com.tanvan.blogapplication.model;
+package com.tanvan.blogapplication.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -8,9 +8,9 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "likes")
 @Data
-public class Comment {
+public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,15 +18,12 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
-    private User user; // Người bình luận
+    private User user;  // Ai thả like
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     @JsonIgnore
-    private Post post; // Bình luận bài viết nào
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // Nội dung bình luận
+    private Post post;  // Like bài viết nào
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

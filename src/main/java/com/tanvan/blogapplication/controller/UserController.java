@@ -1,7 +1,7 @@
 package com.tanvan.blogapplication.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tanvan.blogapplication.model.User;
+import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

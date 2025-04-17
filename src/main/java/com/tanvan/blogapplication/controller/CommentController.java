@@ -1,7 +1,7 @@
 package com.tanvan.blogapplication.controller;
 
 import com.tanvan.blogapplication.dto.CommentRequest;
-import com.tanvan.blogapplication.model.Comment;
+import com.tanvan.blogapplication.entity.Comment;
 import com.tanvan.blogapplication.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +45,4 @@ public class CommentController {
                     .body("Error retrieving comments: " + e.getMessage());
         }
     }
-
-
 }

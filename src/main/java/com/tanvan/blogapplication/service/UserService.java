@@ -1,7 +1,7 @@
 package com.tanvan.blogapplication.service;
 
-import com.tanvan.blogapplication.model.Post;
-import com.tanvan.blogapplication.model.User;
+import com.tanvan.blogapplication.entity.Post;
+import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

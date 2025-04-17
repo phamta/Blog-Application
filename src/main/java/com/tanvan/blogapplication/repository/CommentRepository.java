@@ -1,6 +1,6 @@
 package com.tanvan.blogapplication.repository;
 
-import com.tanvan.blogapplication.model.Comment;
+import com.tanvan.blogapplication.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
