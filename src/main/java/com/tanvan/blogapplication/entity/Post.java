@@ -48,15 +48,11 @@ public class Post {
     @JsonIgnore
     private List<Comment> comments;
 
-    @Transient
-    private int likeCount;
+    @Column(name = "like_count")
+    private int likeCount = 0;
 
-    @Transient
-    private boolean isLike;
+    @Column(name = "is_like")
+    private int isLike = 0;
 
-    // Getter của likeCount có thể tính dựa trên số lượng like được load
-    public int getLikeCount() {
-        return (likes != null) ? likes.size() : 0;
-    }
 }
 
