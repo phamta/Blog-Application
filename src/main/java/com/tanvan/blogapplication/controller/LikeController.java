@@ -1,7 +1,10 @@
 package com.tanvan.blogapplication.controller;
 
 import com.tanvan.blogapplication.entity.Like;
+import com.tanvan.blogapplication.entity.Post;
+import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.service.LikeService;
+import com.tanvan.blogapplication.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,9 @@ public class LikeController {
 
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @PostMapping("/like")
     public ResponseEntity<?> likePost(@RequestParam Long userId, @RequestParam Long postId) {
@@ -40,14 +46,18 @@ public class LikeController {
     }
 
     // Endpoint GET để lấy danh sách Like của một bài post
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<?> getLikesByPost(@PathVariable Long postId) {
-        try {
-            List<Like> likes = likeService.getLikesByPost(postId);
-            return ResponseEntity.ok(likes);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving likes: " + e.getMessage());
-        }
-    }
+//    @GetMapping("/post/{postId}")
+//    public ResponseEntity<?> getLikesByPost(@PathVariable Long postId, @RequestParam(required = false) Long userId) {
+//        try {
+//            List<Like> likes = likeService.getLikesByPost(postId);
+//            boolean isLiked = userId != null && likes.stream().anyMatch(like -> like.getUser().getId() == (userId));
+//            Post post = postRepository.findById(postId).orElseThrow();
+//            post.setIsLike(isLiked); // lưu trạng thái tạm cho frontend nếu cần
+//            return ResponseEntity.ok(post);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Error retrieving likes: " + e.getMessage());
+//        }
+//    }
+
 }

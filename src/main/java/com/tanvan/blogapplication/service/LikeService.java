@@ -41,14 +41,26 @@ public class LikeService {
         like.setUser(user);
         like.setPost(post);
         like.setCreatedAt(LocalDateTime.now());
-        return likeRepository.save(like);
+        Like savedLike = likeRepository.save(like);
+
+        // Cập nhật likeCount trong post
+        post.setLikeCount(post.getLikeCount() + 1);
+        postRepository.save(post);
+
+        return savedLike;
     }
 
-    // Xóa like (unlike)
     public void unlikePost(Long userId, Long postId) {
         Optional<Like> likeOpt = likeRepository.findByUserIdAndPostId(userId, postId);
         if(likeOpt.isPresent()){
-            likeRepository.delete(likeOpt.get());
+            Like like = likeOpt.get();
+            Post post = like.getPost();
+
+            likeRepository.delete(like);
+
+            // Cập nhật likeCount sau khi unlike
+            post.setLikeCount(Math.max(0, post.getLikeCount() - 1));
+            postRepository.save(post);
         } else {
             throw new RuntimeException("Like not found");
         }
