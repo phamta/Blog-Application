@@ -23,7 +23,13 @@ const Post = ({
         />
       )}
       <div className="interaction-container">
-        <span className="interaction-item">❤️ {post.likes?.length || 0}</span>
+        <span
+          className="interaction-item"
+          style={{ cursor: "pointer", color: post.isLike ? "red" : "gray" }}
+          onClick={() => post.handleLike(post.id, post.isLike)}
+        >
+          {post.isLike ? "❤️" : "🤍"} {post.likeCount}
+        </span>
         <span
           className="interaction-item"
           style={{ cursor: "pointer" }}
@@ -38,7 +44,9 @@ const Post = ({
           {postComments[post.id]?.length > 0 ? (
             postComments[post.id].map((comment) => (
               <div key={comment.id} className="comment-card">
-                {comment.user && comment.user.imageData && comment.user.imageType ? (
+                {comment.user &&
+                comment.user.imageData &&
+                comment.user.imageType ? (
                   <img
                     src={`data:${comment.user.imageType};base64,${comment.user.imageData}`}
                     alt={comment.user.username}
@@ -48,7 +56,11 @@ const Post = ({
                   <div className="comment-placeholder">No Image</div>
                 )}
                 <div className="comment-content">
-                  <strong>{comment.user ? comment.user.username : "Người dùng ẩn danh"}</strong>
+                  <strong>
+                    {comment.user
+                      ? comment.user.username
+                      : "Người dùng ẩn danh"}
+                  </strong>
                   <p>{comment.content}</p>
                 </div>
               </div>

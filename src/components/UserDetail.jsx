@@ -93,7 +93,7 @@ function UserDetail() {
       alert("Bạn cần đăng nhập để bình luận");
       return;
     }
-  
+
     try {
       const response = await fetch("http://localhost:8080/api/comments/add", {
         method: "POST",
@@ -106,35 +106,73 @@ function UserDetail() {
           content,
         }),
       });
-  
+
       if (!response.ok) throw new Error("Gửi bình luận thất bại");
-  
+
       // Xoá nội dung sau khi gửi
       setNewComments((prev) => ({ ...prev, [postId]: "" }));
-  
+
       // Cập nhật lại danh sách comment
-      const res = await fetch(`http://localhost:8080/api/comments/post/${postId}`);
+      const res = await fetch(
+        `http://localhost:8080/api/comments/post/${postId}`
+      );
       if (!res.ok) throw new Error("Tải lại bình luận thất bại");
       const updatedComments = await res.json();
-  
+
       setPostComments((prev) => ({
         ...prev,
         [postId]: updatedComments,
       }));
-  
+
       // Cập nhật lại số lượng comments cho post (tuỳ bạn có muốn hay không)
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: updatedComments }
-            : post
+          post.id === postId ? { ...post, comments: updatedComments } : post
         )
       );
     } catch (error) {
       console.error("Lỗi khi gửi comment:", error);
     }
   };
-  
+
+  const handleLikeToggle = async (postId, isLiked) => {
+    const userIdFromStorage = localStorage.getItem("userId");
+
+    if (!userIdFromStorage) {
+      alert("Bạn cần đăng nhập để thả tim");
+      return;
+    }
+
+    try {
+      const url = isLiked
+        ? `http://localhost:8080/api/likes/unlike?userId=${userIdFromStorage}&postId=${postId}`
+        : `http://localhost:8080/api/likes/like?userId=${userIdFromStorage}&postId=${postId}`;
+
+      const options = {
+        method: isLiked ? "DELETE" : "POST",
+      };
+
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error("Lỗi khi thả tim");
+
+      // Cập nhật lại post trong danh sách
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                isLike: !isLiked,
+                likeCount: isLiked
+                  ? Math.max(0, post.likeCount - 1)
+                  : post.likeCount + 1,
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi toggle like:", error);
+    }
+  };
 
   if (!user) return <p>Loading...</p>;
 
@@ -175,7 +213,7 @@ function UserDetail() {
           posts.map((post) => (
             <Post
               key={post.id}
-              post={post}
+              post={{ ...post, handleLike: handleLikeToggle }}
               commentToggle={commentToggle}
               postComments={postComments}
               newComments={newComments}
