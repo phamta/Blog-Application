@@ -3,6 +3,7 @@ package com.tanvan.blogapplication.controller;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.service.UserService;
+import com.tanvan.blogapplication.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +23,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping("/check-token")
+    public ResponseEntity<String> checkToken(@RequestHeader("userId") Long userId) {
+        return ResponseEntity.ok("Token hợp lệ cho userId: " + userId);
+    }
+
+
     @GetMapping("/all")
     public ResponseEntity<List<User>> findAll() {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
@@ -30,10 +41,12 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         Optional<User> user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
+            String token = jwtUtil.generateToken(user.get().getId()); // Tạo token
+            return ResponseEntity.ok(Map.of("token", token, "user", user.get()));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Đăng nhập thất bại");
     }
+
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id) {
