@@ -5,15 +5,29 @@ import "../css/UserDetail.css";
 
 function UserDetail() {
   const { userId } = useParams();
+  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [commentToggle, setCommentToggle] = useState({});
   const [newComments, setNewComments] = useState({});
   const [postComments, setPostComments] = useState({});
-  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  const userIdFromStorage = localStorage.getItem("userId");
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/user/${userId}`)
+    if (!token) {
+      alert("Bạn cần đăng nhập để xem thông tin.");
+      navigate("/login");
+      return;
+    }
+
+    fetch(`http://localhost:8080/api/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch user");
         return res.json();
@@ -21,7 +35,11 @@ function UserDetail() {
       .then((data) => setUser(data))
       .catch((err) => console.error("Error fetching user details:", err));
 
-    fetch(`http://localhost:8080/api/posts/user/${userId}`)
+    fetch(`http://localhost:8080/api/posts/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch posts");
         return res.json();
@@ -33,13 +51,20 @@ function UserDetail() {
         setPosts(sortedPosts);
       })
       .catch((err) => console.error("Error fetching posts:", err));
-  }, [userId]);
+  }, [userId, token, navigate]);
 
   const handleUpdate = () => navigate(`/update/${userId}`);
+  const handleCreatePost = () => navigate(`/create-post/${userId}`);
 
   const handleDelete = () => {
+    if (!token) return;
     if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
-      fetch(`http://localhost:8080/api/delete/${userId}`, { method: "DELETE" })
+      fetch(`http://localhost:8080/api/delete/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((res) => {
           if (!res.ok) throw new Error("Failed to delete user");
           alert("Người dùng đã được xóa thành công");
@@ -49,16 +74,16 @@ function UserDetail() {
     }
   };
 
-  const handleCreatePost = () => {
-    navigate(`/create-post/${userId}`);
-  };
-
   const toggleComments = (postId) => {
     setCommentToggle((prev) => {
       const newState = { ...prev, [postId]: !prev[postId] };
 
       if (newState[postId] && !postComments[postId]) {
-        fetch(`http://localhost:8080/api/comments/post/${postId}`)
+        fetch(`http://localhost:8080/api/comments/post/${postId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
           .then((res) => {
             if (!res.ok) throw new Error("Failed to fetch comments");
             return res.json();
@@ -87,8 +112,6 @@ function UserDetail() {
     const content = newComments[postId]?.trim();
     if (!content) return;
 
-    const userIdFromStorage = localStorage.getItem("userId");
-
     if (!userIdFromStorage) {
       alert("Bạn cần đăng nhập để bình luận");
       return;
@@ -99,6 +122,7 @@ function UserDetail() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           userId: Number(userIdFromStorage),
@@ -109,12 +133,15 @@ function UserDetail() {
 
       if (!response.ok) throw new Error("Gửi bình luận thất bại");
 
-      // Xoá nội dung sau khi gửi
       setNewComments((prev) => ({ ...prev, [postId]: "" }));
 
-      // Cập nhật lại danh sách comment
       const res = await fetch(
-        `http://localhost:8080/api/comments/post/${postId}`
+        `http://localhost:8080/api/comments/post/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (!res.ok) throw new Error("Tải lại bình luận thất bại");
       const updatedComments = await res.json();
@@ -124,7 +151,6 @@ function UserDetail() {
         [postId]: updatedComments,
       }));
 
-      // Cập nhật lại số lượng comments cho post (tuỳ bạn có muốn hay không)
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId ? { ...post, comments: updatedComments } : post
@@ -136,8 +162,6 @@ function UserDetail() {
   };
 
   const handleLikeToggle = async (postId, isLiked) => {
-    const userIdFromStorage = localStorage.getItem("userId");
-
     if (!userIdFromStorage) {
       alert("Bạn cần đăng nhập để thả tim");
       return;
@@ -150,12 +174,14 @@ function UserDetail() {
 
       const options = {
         method: isLiked ? "DELETE" : "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       };
 
       const response = await fetch(url, options);
       if (!response.ok) throw new Error("Lỗi khi thả tim");
 
-      // Cập nhật lại post trong danh sách
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
@@ -181,7 +207,7 @@ function UserDetail() {
       <div className="userInfo">
         <h2>{user.username}</h2>
         <p>Email: {user.email}</p>
-        <p>Ngày sinh: {user.birthday}</p>
+        <p>Ngày sinh: {new Date(user.birthday).toLocaleDateString()}</p>
         {user.imageData && user.imageType && (
           <img
             src={`data:${user.imageType};base64,${user.imageData}`}
@@ -189,20 +215,22 @@ function UserDetail() {
             className="profileImage"
           />
         )}
-        <div className="buttonContainer">
-          <button onClick={handleUpdate} className="button">
-            Update
-          </button>
-          <button onClick={handleDelete} className="button deleteButton">
-            Delete
-          </button>
-          <button
-            onClick={handleCreatePost}
-            className="button createPostButton"
-          >
-            Tạo bài đăng
-          </button>
-        </div>
+        {userId === userIdFromStorage && (
+          <div className="buttonContainer">
+            <button onClick={handleUpdate} className="button">
+              Update
+            </button>
+            <button onClick={handleDelete} className="button deleteButton">
+              Delete
+            </button>
+            <button
+              onClick={handleCreatePost}
+              className="button createPostButton"
+            >
+              Tạo bài đăng
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="postContainer">
@@ -213,7 +241,8 @@ function UserDetail() {
           posts.map((post) => (
             <Post
               key={post.id}
-              post={{ ...post, handleLike: handleLikeToggle }}
+              post={post}
+              handleLike={handleLikeToggle}
               commentToggle={commentToggle}
               postComments={postComments}
               newComments={newComments}

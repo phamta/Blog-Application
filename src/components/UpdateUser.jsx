@@ -11,17 +11,24 @@ export default function UpdateUser() {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/user/${userId}`)
+    fetch(`http://localhost:8080/api/user/${userId}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
+        const formattedBirthday = data.birthday
+          ? new Date(data.birthday).toISOString().split("T")[0]
+          : "";
         setFormData({
-          username: data.username,
-          email: data.email,
-          birthday: data.birthday,
+          username: data.username || "",
+          email: data.email || "",
+          birthday: formattedBirthday,
         });
       })
       .catch((error) => console.error("Error fetching user data:", error));
-  }, [userId]);
+  }, [userId]);  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +39,10 @@ export default function UpdateUser() {
     e.preventDefault();
     fetch(`http://localhost:8080/api/update/info/${userId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
       body: JSON.stringify(formData),
     })
       .then((response) => {

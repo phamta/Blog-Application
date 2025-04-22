@@ -13,31 +13,35 @@ export default function CreatePost() {
     formData.append("userId", userId); // Thay bằng userId thực tế
     formData.append("title", title);
     if (image) {
-        formData.append("image", image);
+      formData.append("image", image);
     }
 
     try {
-        const response = await fetch("http://localhost:8080/api/posts/upload", {
-            method: "POST",
-            body: formData,
-        });
+      const response = await fetch("http://localhost:8080/api/posts/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      });
 
-        console.log("Response status:", response.status);
-        
-        const responseText = await response.text();
-        console.log("Response text:", responseText);
+      console.log("Response status:", response.status);
 
-        if (!response.ok) {
-            throw new Error(responseText);
-        }
+      const responseText = await response.text();
+      console.log("Response text:", responseText);
 
-        alert("Bài đăng đã được tạo thành công");
-        navigate("/");
+      if (!response.ok) {
+        throw new Error(responseText);
+      }
+
+      alert("Bài đăng đã được tạo thành công");
+      navigate(`/user/${userId}`);
+      // hoặc navigate("/posts"); nếu bạn có trang danh sách bài đăng
     } catch (error) {
-        console.error("Error creating post:", error.message);
-        alert("Đã xảy ra lỗi: " + error.message);
+      console.error("Error creating post:", error.message);
+      alert("Đã xảy ra lỗi: " + error.message);
     }
-};
+  };
 
   return (
     <div style={{ padding: "20px" }}>

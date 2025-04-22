@@ -1,52 +1,44 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 export default function AddUserForm() {
-  // Khởi tạo state cho thông tin user
   const [user, setUser] = useState({
     username: "",
     email: "",
     password: "",
-    birthday: "", // Add birthday field
+    birthday: "",
   });
-
-  // State cho file ảnh (nếu có)
   const [image, setImage] = useState(null);
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // Initialize navigate
-
-  // Xử lý thay đổi input cho thông tin user
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
 
-  // Xử lý khi chọn file ảnh
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
 
-  // Xử lý submit form: gọi API tạo user
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Tạo FormData để gửi multipart/form-data
     const formData = new FormData();
-
-    // Gắn thông tin user dưới dạng JSON
     formData.append(
       "user",
       new Blob([JSON.stringify(user)], { type: "application/json" })
     );
-
-    // Nếu có file ảnh, gắn vào formData
     if (image) {
       formData.append("image", image);
     }
 
-    // Gọi API với phương thức POST
+    const token = localStorage.getItem("token");
+
     fetch("http://localhost:8080/api/add", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // Gửi token để xác thực
+      },
       body: formData,
     })
       .then((response) => {
@@ -57,7 +49,7 @@ export default function AddUserForm() {
       })
       .then((data) => {
         console.log("User created:", data);
-        navigate("/users"); // Redirect to UserList page
+        navigate("/users");
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -75,7 +67,6 @@ export default function AddUserForm() {
             name="username"
             value={user.username}
             onChange={handleChange}
-            placeholder="Nhập username"
             required
           />
         </div>
@@ -86,7 +77,6 @@ export default function AddUserForm() {
             name="email"
             value={user.email}
             onChange={handleChange}
-            placeholder="Nhập email"
             required
           />
         </div>
@@ -97,7 +87,6 @@ export default function AddUserForm() {
             name="password"
             value={user.password}
             onChange={handleChange}
-            placeholder="Nhập password"
             required
           />
         </div>

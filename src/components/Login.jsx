@@ -19,10 +19,12 @@ export default function Form() {
                 }
                 return res.json();
             })
-            .then((user) => {
-                console.log("Đăng nhập thành công:", user);
-                localStorage.setItem("userId", user.id); // lưu lại để dùng sau
+            .then((data) => {
+                console.log("Đăng nhập thành công:", data);
+                localStorage.setItem("userId", data.user.id);
+                localStorage.setItem("token", data.token);
                 navigate("/users");
+                window.location.reload(); // ✅ đảm bảo App đọc lại token
             })
             .catch((err) => {
                 alert("Sai tài khoản hoặc mật khẩu");
@@ -32,6 +34,7 @@ export default function Form() {
 
     return (
         <div>
+            <h2>Đăng nhập</h2>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Username:</label>
                 <input type="text" id="username" name="username" required />
@@ -39,8 +42,17 @@ export default function Form() {
                 <label htmlFor="password">Password:</label>
                 <input type="password" id="password" name="password" required />
                 <br />
-                <input type="submit" value="Login" />
+                <input type="submit" value="Đăng nhập" />
             </form>
+            <p>
+                Chưa có tài khoản?{" "}
+                <span
+                    style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
+                    onClick={() => navigate("/users/new")}
+                >
+                    Đăng ký ngay
+                </span>
+            </p>
         </div>
     );
 }

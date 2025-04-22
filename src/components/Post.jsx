@@ -1,7 +1,9 @@
 import React from "react";
 import "../css/Post.css";
+
 const Post = ({
   post,
+  handleLike, // <== thêm dòng này để nhận từ props
   toggleComments,
   commentToggle,
   postComments,
@@ -26,7 +28,7 @@ const Post = ({
         <span
           className="interaction-item"
           style={{ cursor: "pointer", color: post.isLike ? "red" : "gray" }}
-          onClick={() => post.handleLike(post.id, post.isLike)}
+          onClick={() => handleLike(post.id, post.isLike)} // ✅ sửa ở đây
         >
           {post.isLike ? "❤️" : "🤍"} {post.likeCount}
         </span>
