@@ -1,44 +1,16 @@
 import React from "react";
+import "../css/User.css"; // Import file CSS
 
 export default function User({ user, onClick }) {
   return (
-    <div
-      onClick={() => onClick(user.id)}
-      style={{
-        border: "1px solid #ccc",
-        padding: "10px",
-        margin: "10px 0",
-        display: "flex",
-        alignItems: "center",
-        cursor: "pointer",
-      }}
-    >
+    <div className="user-card" onClick={() => onClick(user.id)}>
       {user.imageData && user.imageType ? (
         <img
           src={`data:${user.imageType};base64,${user.imageData}`}
           alt={user.username}
-          style={{
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            marginRight: "10px",
-          }}
         />
       ) : (
-        <div
-          style={{
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            backgroundColor: "#ddd",
-            marginRight: "10px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          No Image
-        </div>
+        <div className="placeholder">No Image</div>
       )}
       <div>
         <h3>{user.username}</h3>
@@ -46,4 +18,4 @@ export default function User({ user, onClick }) {
       </div>
     </div>
   );
-}
+} 

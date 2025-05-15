@@ -12,6 +12,7 @@ import UserDetail from "./components/UserDetail";
 import UpdateUser from "./components/UpdateUser";
 import CreatePost from "./components/CreatePost";
 import Login from "./components/Login";
+import Messager from "./components/Messager";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -19,8 +20,8 @@ function App() {
   const [checkingToken, setCheckingToken] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+    const token = sessionStorage.getItem("token");
+    const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
     if (!token || !userId) {
       setIsAuthenticated(false);
       setCheckingToken(false);
@@ -40,8 +41,8 @@ function App() {
       })
       .catch((err) => {
         console.log("Token không hợp lệ hoặc hết hạn:", err.response?.data);
-        localStorage.removeItem("token");
-        localStorage.removeItem("userId");  // Xóa userId nếu token không hợp lệ
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("userId");  // Xóa userId nếu token không hợp lệ
         setIsAuthenticated(false);
         setCheckingToken(false);
       });
@@ -91,6 +92,11 @@ function App() {
               isAuthenticated ? <CreatePost /> : <Navigate to="/login" />
             }
           />
+
+          <Route path="/chat/:userId" 
+          element={
+              isAuthenticated ? <Messager /> : <Navigate to="/login" />
+            } />
         </Routes>
       </div>
     </Router>

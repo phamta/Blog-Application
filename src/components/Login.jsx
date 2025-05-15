@@ -21,8 +21,8 @@ export default function Form() {
             })
             .then((data) => {
                 console.log("Đăng nhập thành công:", data);
-                localStorage.setItem("userId", data.user.id);
-                localStorage.setItem("token", data.token);
+                sessionStorage.setItem("userId", data.user.id);
+                sessionStorage.setItem("token", data.token);
                 navigate("/users");
                 window.location.reload(); // ✅ đảm bảo App đọc lại token
             })

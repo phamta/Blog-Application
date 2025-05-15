@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Post from "./Post";
+import UserInfo from "./UserInfo"; // Import component UserInfo
+import PostList from "./PostList"; // Import component PostList
 import "../css/UserDetail.css";
 
 function UserDetail() {
@@ -13,8 +14,8 @@ function UserDetail() {
   const [newComments, setNewComments] = useState({});
   const [postComments, setPostComments] = useState({});
 
-  const token = localStorage.getItem("token");
-  const userIdFromStorage = localStorage.getItem("userId");
+  const token = sessionStorage.getItem("token");
+  const userIdFromStorage = sessionStorage.getItem("userId");
 
   useEffect(() => {
     if (!token) {
@@ -23,6 +24,7 @@ function UserDetail() {
       return;
     }
 
+    // Fetch user details
     fetch(`http://localhost:8080/api/user/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -35,6 +37,7 @@ function UserDetail() {
       .then((data) => setUser(data))
       .catch((err) => console.error("Error fetching user details:", err));
 
+    // Fetch user posts
     fetch(`http://localhost:8080/api/posts/user/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -204,55 +207,24 @@ function UserDetail() {
 
   return (
     <div className="container">
-      <div className="userInfo">
-        <h2>{user.username}</h2>
-        <p>Email: {user.email}</p>
-        <p>Ngày sinh: {new Date(user.birthday).toLocaleDateString()}</p>
-        {user.imageData && user.imageType && (
-          <img
-            src={`data:${user.imageType};base64,${user.imageData}`}
-            alt={user.username}
-            className="profileImage"
-          />
-        )}
-        {userId === userIdFromStorage && (
-          <div className="buttonContainer">
-            <button onClick={handleUpdate} className="button">
-              Update
-            </button>
-            <button onClick={handleDelete} className="button deleteButton">
-              Delete
-            </button>
-            <button
-              onClick={handleCreatePost}
-              className="button createPostButton"
-            >
-              Tạo bài đăng
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="postContainer">
-        <h3>Bài viết của {user.username}</h3>
-        {posts.length === 0 ? (
-          <p style={{ textAlign: "center" }}>Không có bài viết nào.</p>
-        ) : (
-          posts.map((post) => (
-            <Post
-              key={post.id}
-              post={post}
-              handleLike={handleLikeToggle}
-              commentToggle={commentToggle}
-              postComments={postComments}
-              newComments={newComments}
-              toggleComments={toggleComments}
-              handleCommentChange={handleCommentChange}
-              handleCommentSubmit={handleCommentSubmit}
-            />
-          ))
-        )}
-      </div>
+      <UserInfo
+        user={user}
+        userIdFromStorage={userIdFromStorage}
+        handleUpdate={handleUpdate}
+        handleDelete={handleDelete}
+        handleCreatePost={handleCreatePost}
+      />
+      <PostList
+        posts={posts}
+        user={user}
+        commentToggle={commentToggle}
+        postComments={postComments}
+        newComments={newComments}
+        toggleComments={toggleComments}
+        handleCommentChange={handleCommentChange}
+        handleCommentSubmit={handleCommentSubmit}
+        handleLikeToggle={handleLikeToggle}
+      />
     </div>
   );
 }
