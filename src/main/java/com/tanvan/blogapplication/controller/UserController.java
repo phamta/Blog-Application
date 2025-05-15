@@ -1,6 +1,7 @@
 package com.tanvan.blogapplication.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.tanvan.blogapplication.dto.AvatarUpdateRequest;
 import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.service.UserService;
 import com.tanvan.blogapplication.util.JwtUtil;
@@ -91,4 +92,22 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
+
+    @PutMapping("/users/{userId}/avatar")
+    public ResponseEntity<?> updateAvatar(
+            @PathVariable Long userId,
+            @RequestPart("file") MultipartFile image) {
+        System.out.println("Update Avatar");
+        try {
+            boolean updated = userService.updateAvatar(userId, image);
+            if (updated) {
+                return ResponseEntity.ok("Avatar updated successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid image file");
+        }
+    }
+
 }

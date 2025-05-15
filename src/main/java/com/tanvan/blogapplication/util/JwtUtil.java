@@ -6,11 +6,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.Key;
 import java.util.Date;
 
 @Component
+@CrossOrigin
 public class JwtUtil {
 
     private final Key key = Keys.hmacShaKeyFor("tanvan_secret_keytanvan_secret_key".getBytes());
