@@ -1,12 +1,15 @@
 package com.tanvan.blogapplication.service;
 
-import com.tanvan.blogapplication.entity.Like;
-import com.tanvan.blogapplication.entity.Post;
-import com.tanvan.blogapplication.entity.User;
+import com.tanvan.blogapplication.dto.NotificationRequest;
+import com.tanvan.blogapplication.entity.*;
+import com.tanvan.blogapplication.mapper.NotificationMapper;
 import com.tanvan.blogapplication.repository.LikeRepository;
+import com.tanvan.blogapplication.repository.NotificationRepository;
 import com.tanvan.blogapplication.repository.PostRepository;
 import com.tanvan.blogapplication.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,20 +17,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LikeService {
 
-    @Autowired
-    private LikeRepository likeRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PostRepository postRepository;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final NotificationRepository notificationRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // Tạo like cho bài viết
     public Like likePost(Long userId, Long postId) {
-        User user = userRepository.findById(userId)
+        User actor = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -37,8 +38,9 @@ public class LikeService {
             return existingLike.get();
         }
 
+        // 1. Lưu like
         Like like = new Like();
-        like.setUser(user);
+        like.setUser(actor);
         like.setPost(post);
         like.setCreatedAt(LocalDateTime.now());
         Like savedLike = likeRepository.save(like);
@@ -46,6 +48,29 @@ public class LikeService {
         // Cập nhật likeCount trong post
         post.setLikeCount(post.getLikeCount() + 1);
         postRepository.save(post);
+
+        User recipient = post.getAuthor();
+        if (!(recipient.getId() == actor.getId())) {
+            NotificationRequest notifReq = new NotificationRequest();
+            notifReq.setType(NotificationType.LIKE);
+            notifReq.setRecipientId(recipient.getId());
+            notifReq.setActorId(actor.getId());
+            notifReq.setPostId(post.getId());
+
+            Notification notification = NotificationMapper.toEntity(
+                    notifReq, recipient, actor, post
+            );
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            NotificationRequest notifDTO = NotificationMapper.toDTO(savedNotification);
+
+            // 4. Gửi socket cho chủ bài viết
+            messagingTemplate.convertAndSend(
+                    "/topic/notifications/" + recipient.getId(),
+                    notifDTO
+            );
+        }
 
         return savedLike;
     }
