@@ -56,6 +56,14 @@ public class PostService {
         return postOptional.get().getImageData();
     }
 
+    public Post getPost(Long postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (postOptional.isEmpty()) {
+            throw new RuntimeException("Post not found");
+        }
+        return postOptional.get();
+    }
+
     public List<Post> getPostsByUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
