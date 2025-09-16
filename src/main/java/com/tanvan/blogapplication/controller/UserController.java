@@ -1,7 +1,7 @@
 package com.tanvan.blogapplication.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.tanvan.blogapplication.dto.AvatarUpdateRequest;
+import com.tanvan.blogapplication.dto.AuthResponse;
 import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.service.UserService;
 import com.tanvan.blogapplication.util.JwtUtil;
@@ -21,17 +21,18 @@ import java.util.Optional;
 @JsonIgnoreProperties({"posts"})
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    public UserController(UserService userService, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @GetMapping("/check-token")
     public ResponseEntity<String> checkToken(@RequestHeader("userId") Long userId) {
         return ResponseEntity.ok("Token hợp lệ cho userId: " + userId);
     }
-
 
     @GetMapping("/all")
     public ResponseEntity<List<User>> findAll() {
@@ -41,13 +42,31 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         Optional<User> user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        System.out.printf("Login");
         if (user.isPresent()) {
-            String token = jwtUtil.generateToken(user.get().getId()); // Tạo token
-            return ResponseEntity.ok(Map.of("token", token, "user", user.get()));
+            String accessToken = jwtUtil.generateAccessToken(user.get().getId());
+            String refreshToken = jwtUtil.generateRefreshToken(user.get().getId());
+
+            System.out.printf("Co user");
+            return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Đăng nhập thất bại");
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestParam String refreshToken) {
+        if (jwtUtil.isTokenExpired(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = jwtUtil.extractClaims(refreshToken).get("userId", Long.class);
+
+        String newAccessToken = jwtUtil.generateAccessToken(userId);
+
+        return ResponseEntity.ok(
+                new AuthResponse(newAccessToken, refreshToken) // giữ nguyên refresh token
+        );
+    }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id) {
