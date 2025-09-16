@@ -17,11 +17,12 @@ import java.util.List;
 @CrossOrigin
 public class LikeController {
 
-    @Autowired
-    private LikeService likeService;
+    private final LikeService likeService;
 
-    @Autowired
-    private PostRepository postRepository;
+
+    public LikeController(LikeService likeService, PostRepository postRepository) {
+        this.likeService = likeService;
+    }
 
     @PostMapping("/like")
     public ResponseEntity<?> likePost(@RequestParam Long userId, @RequestParam Long postId) {

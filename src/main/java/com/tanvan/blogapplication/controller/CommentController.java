@@ -15,8 +15,11 @@ import java.util.List;
 @CrossOrigin
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     // Endpoint thêm bình luận
     @PostMapping("/add")

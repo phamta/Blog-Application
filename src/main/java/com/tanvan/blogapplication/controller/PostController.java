@@ -18,8 +18,11 @@ import java.util.Map;
 @CrossOrigin
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     // API tạo bài viết có ảnh
     @PostMapping("/upload")
