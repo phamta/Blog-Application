@@ -7,7 +7,7 @@ const Navbar = () => {
     <header className={styles.header}>
       <div className={`${styles.container} ${styles["container--narrow"]}`}>
         <a href="#" className={styles.header__logo}>
-          Blag
+          Blag 
         </a>
         <nav className={styles.header__nav}>
           {/* <input type="checkbox" id="responsive-menu" /> */}
