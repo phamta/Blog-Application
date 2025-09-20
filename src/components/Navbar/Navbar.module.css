@@ -1,0 +1,114 @@
+.header {
+  background: #222;
+  color: #fff;
+  padding: 15px 0;
+  width: 100vw;           /* Thêm dòng này */
+  left: 0;                /* Thêm dòng này */
+  position: fixed;        /* Thêm dòng này để header luôn ở trên cùng */
+  top: 0;                 /* Thêm dòng này */
+  z-index: 1000;          /* Thêm dòng này để nổi lên trên */
+}
+
+.container {
+  width: 100%;            /* Sửa lại từ 90% thành 100% */
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 5vw;      /* Thêm padding để nội dung không sát mép */
+  padding-right: 5vw;
+}
+
+.container--narrow {
+  max-width: 1200px;      /* Đảm bảo max-width không bị nhỏ quá */
+}
+
+.header__logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.header__nav {
+  position: relative;
+}
+
+.toggle-menu {
+  display: none;
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+}
+
+.toggle-menu__lines {
+  width: 25px;
+  height: 2px;
+  background: #fff;
+  margin: 5px 0;
+}
+
+.header__menu {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.header__menuItem a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.header__menuItem a:hover {
+  color: #00bcd4;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.btn--sub {
+  background: #00bcd4;
+  color: #fff;
+}
+
+.btn--sub:hover {
+  background: #0097a7;
+}
+
+/* Responsive */
+#responsive-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .toggle-menu {
+    display: block;
+  }
+
+  .header__menu {
+    display: none;
+    flex-direction: column;
+    background: #222;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    width: 200px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  #responsive-menu:checked ~ .header__menu {
+    display: flex;
+  }
+
+  .header__menuItem {
+    margin: 10px 0;
+  }
+}
