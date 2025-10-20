@@ -39,35 +39,6 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        Optional<User> user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-        System.out.printf("Login");
-        if (user.isPresent()) {
-            String accessToken = jwtUtil.generateAccessToken(user.get().getId());
-            String refreshToken = jwtUtil.generateRefreshToken(user.get().getId());
-
-            System.out.printf("Co user");
-            return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Đăng nhập thất bại");
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestParam String refreshToken) {
-        if (jwtUtil.isTokenExpired(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Long userId = jwtUtil.extractClaims(refreshToken).get("userId", Long.class);
-
-        String newAccessToken = jwtUtil.generateAccessToken(userId);
-
-        return ResponseEntity.ok(
-                new AuthResponse(newAccessToken, refreshToken) // giữ nguyên refresh token
-        );
-    }
-
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id) {
         Optional<User> userOptional = userService.getUserById(id);

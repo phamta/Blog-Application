@@ -63,23 +63,32 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.security.Key;
 import java.util.Date;
 
 @Component
-@CrossOrigin
 public class JwtUtil {
 
     private final Key key = Keys.hmacShaKeyFor("tanvan_secret_keytanvan_secret_key".getBytes());
     // cần >=256 bit (32 ký tự) cho HS256
 
-    public String generateToken(Long userId) {
+    // Access token: 30 phút
+    public String generateAccessToken(Long userId) {
         return Jwts.builder()
                 .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 phút
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Refresh token: 7 ngày
+    public String generateRefreshToken(Long userId) {
+        return Jwts.builder()
+                .claim("userId", userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7 ngày
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -90,5 +99,14 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public boolean isTokenExpired(String token) {
+        try {
+            Date expiration = extractClaims(token).getExpiration();
+            return expiration.before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 }

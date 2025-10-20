@@ -19,13 +19,13 @@ public class LikeController {
 
     private final LikeService likeService;
 
-
-    public LikeController(LikeService likeService, PostRepository postRepository) {
+    public LikeController(LikeService likeService) {
         this.likeService = likeService;
     }
 
-    @PostMapping("/like")
-    public ResponseEntity<?> likePost(@RequestParam Long userId, @RequestParam Long postId) {
+    @PostMapping("/userId/{userId}/postId/{postId}")
+    public ResponseEntity<?> likePost(@PathVariable Long userId, @PathVariable Long postId) {
+        System.out.printf("like");
         try {
             Like like = likeService.likePost(userId, postId);
             return ResponseEntity.ok(like);
@@ -35,8 +35,9 @@ public class LikeController {
         }
     }
 
-    @DeleteMapping("/unlike")
+    @DeleteMapping("/unlike/userId/{userId}/postId/{postId}")
     public ResponseEntity<?> unlikePost(@RequestParam Long userId, @RequestParam Long postId) {
+        System.out.printf("Unlike");
         try {
             likeService.unlikePost(userId, postId);
             return ResponseEntity.ok("Unlike successful");
