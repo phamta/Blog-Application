@@ -1,0 +1,150 @@
+.postCard {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 22px;
+  gap: 10px;
+
+  width: 340px;
+  height: 410px; /* Giảm từ ~515px xuống còn ~80% */
+  background: #ffffff;
+  border: 1px solid #f3f3f3;
+  border-radius: 24px;
+
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 15px;
+  margin: 0;
+}
+
+.time {
+  font-size: 12px;
+  color: #7a7a7a;
+}
+
+/* Content */
+.content {
+  width: 100%;
+}
+
+.content p {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.postImage {
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 14px;
+  object-fit: cover;
+  max-height: 200px; /* Giới hạn ảnh để post gọn */
+}
+
+/* Footer (actions) */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: auto;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4c4ddc;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.actionBtn:hover {
+  color: #2c2ddc;
+}
+
+.likeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex; /* ✅ thêm dòng này */
+  align-items: center; /* ✅ và dòng này */
+  gap: 6px; /* ✅ để tạo khoảng cách icon và số */
+}
+
+.likeButton:hover {
+  transform: scale(1.1);
+}
+
+.unlikedIcon {
+  color: #555;
+  font-size: 22px;
+}
+
+.likedIcon {
+  color: #e0245e; /* đỏ kiểu Instagram */
+  font-size: 22px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.commentButton,
+.shareButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #4c4ddc;
+  transition: color 0.2s ease;
+}
+
+.commentButton:hover,
+.shareButton:hover {
+  color: #2c2ddc;
+}
+
+.commentIcon {
+  font-size: 18px;
+}
+
+.likeTotal,
+.commentTotal {
+  font-size: 14px;
+  margin-left: 4px;
+  color: #555;
+}

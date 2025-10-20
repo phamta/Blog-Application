@@ -1,0 +1,75 @@
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #444;
+}
+
+.input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.dragDropArea {
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  background-color: #fafafa;
+}
+
+.dragDropArea:hover {
+  border-color: #007bff;
+}
+
+.previewContainer {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 8px;
+  margin-top: 10px;
+  object-fit: cover;
+}
+
+.button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}

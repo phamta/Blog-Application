@@ -1,106 +1,59 @@
+// src/App.jsx
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
-import axios from "axios";
-import UserList from "./components/UserList";
-import AddUserForm from "./components/AddUserForm";
-import UserDetail from "./components/UserDetail";
-import UpdateUser from "./components/UpdateUser";
-import CreatePost from "./components/CreatePost";
-import Login from "./components/Login";
-import Messager from "./components/Messager";
-import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import { refreshAccessToken } from "./utils/userHelpers";
+import Login from "./features/auth/components/Login/Login";
+import Home from "./pages/Home";
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [checkingToken, setCheckingToken] = useState(true);
+function AppContent() {
+  const { accessToken, setAccessToken } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  // Khi reload, thử refresh token để lấy access token mới
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
-    if (!token || !userId) {
-      setIsAuthenticated(false);
-      setCheckingToken(false);
-      return;
-    }
+    const tryRefresh = async () => {
+      try {
+        const newToken = await refreshAccessToken(); // gọi API refresh
+        setAccessToken(newToken);
+      } catch (err) {
+        console.warn("Refresh token hết hạn hoặc không tồn tại → chuyển về login");
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    axios
-      .get("http://localhost:8080/api/check-token", {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          userId: Number(userId) // Thêm userId vào headers
-        },
-      })
-      .then(() => {
-        setIsAuthenticated(true);
-        setCheckingToken(false);
-      })
-      .catch((err) => {
-        console.log("Token không hợp lệ hoặc hết hạn:", err.response?.data);
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("userId");  // Xóa userId nếu token không hợp lệ
-        setIsAuthenticated(false);
-        setCheckingToken(false);
-      });
-  }, []);
+    tryRefresh();
+  }, [navigate, setAccessToken]);
 
-
-  if (checkingToken) return <div>Đang kiểm tra token...</div>;
+  if (loading) return <div style={{ padding: "2rem" }}>Đang kiểm tra phiên đăng nhập...</div>;
 
   return (
-    <Router>
-      <div style={{ padding: "20px" }}>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? <UserList /> : <Navigate to="/login" />
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/users"
-            element={
-              isAuthenticated ? <UserList /> : <Navigate to="/login" />
-            }
-          />
-          <Route
-            path="/users/new"
-            element={
-              isAuthenticated ? <AddUserForm /> : <Navigate to="/login" />
-            }
-          />
-          <Route
-            path="/user/:userId"
-            element={
-              isAuthenticated ? <UserDetail /> : <Navigate to="/login" />
-            }
-          />
-          <Route
-            path="/update/:userId"
-            element={
-              isAuthenticated ? <UpdateUser /> : <Navigate to="/login" />
-            }
-          />
-          <Route
-            path="/create-post/:userId"
-            element={
-              isAuthenticated ? <CreatePost /> : <Navigate to="/login" />
-            }
-          />
-
-          <Route path="/chat/:userId" 
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        {/* Nếu chưa có token → tự động điều hướng sang login */}
+        <Route
+          path="/"
           element={
-              isAuthenticated ? <Messager /> : <Navigate to="/login" />
-            } />
-        </Routes>
-      </div>
-    </Router>
+            accessToken ? (
+              <Home />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      </Routes>
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}
