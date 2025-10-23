@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController {
 
     private final UserService userService;
@@ -37,7 +37,7 @@ public class AuthController {
             // Set refresh token vào cookie HTTP Only
             ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                     .httpOnly(true)
-                    .secure(false) // dùng true nếu deploy https
+                    .secure(true) // dùng true nếu deploy https
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60) // 7 ngày
                     .sameSite("None") // ⚠️ Cho phép cross-site cookie (localhost:3000 -> localhost:8080)
@@ -69,7 +69,7 @@ public class AuthController {
         // Clear cookie chứa refreshToken
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false) // nếu deploy https thì nên true
+                .secure(true) // nếu deploy https thì nên true
                 .path("/")
                 .maxAge(0) // expire ngay lập tức
                 .build();
