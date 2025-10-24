@@ -2,6 +2,7 @@ package com.tanvan.blogapplication.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tanvan.blogapplication.dto.AuthResponse;
+import com.tanvan.blogapplication.dto.UserSummaryDTO;
 import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.service.UserService;
 import com.tanvan.blogapplication.util.JwtUtil;
@@ -44,6 +45,15 @@ public class UserController {
         Optional<User> userOptional = userService.getUserById(id);
         if (userOptional.isPresent()) {
             return ResponseEntity.ok(userOptional.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
+
+    @GetMapping("/user/summary/{id}")
+    public ResponseEntity<?> getUserSummary(@PathVariable long id) {
+        Optional<UserSummaryDTO> userSummary = userService.getUserSummaryById(id);
+        if (userSummary.isPresent()) {
+            return ResponseEntity.ok(userSummary.get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }

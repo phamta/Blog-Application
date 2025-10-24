@@ -1,5 +1,6 @@
 package com.tanvan.blogapplication.service;
 
+import com.tanvan.blogapplication.dto.UserSummaryDTO;
 import com.tanvan.blogapplication.entity.Post;
 import com.tanvan.blogapplication.entity.User;
 import com.tanvan.blogapplication.repository.UserRepository;
@@ -124,5 +125,17 @@ public class UserService {
         }
     }
 
+
+    public Optional<UserSummaryDTO> getUserSummaryById(Long id) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    String imageUrl = null;
+                    if (user.getImageType() != null && user.getImageData() != null) {
+                        imageUrl = "data:" + user.getImageType() + ";base64," +
+                                java.util.Base64.getEncoder().encodeToString(user.getImageData());
+                    }
+                    return new UserSummaryDTO(user.getId(), user.getUsername(), imageUrl);
+                });
+    }
 
 }
