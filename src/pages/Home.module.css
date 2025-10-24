@@ -1,0 +1,8 @@
+.homeContainer {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: #f7f9fc;
+  min-height: 100vh;
+  padding: 20px;
+  border-radius: 12px;
+}

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import styles from "./PostCard.module.css";
 import { FaHeart, FaRegHeart, FaComment } from "react-icons/fa";
+// import {FaHeart} from "lucide-react";
 
 const PostCard = ({
   postId,
   avatar,
   username,
   time,
-  content,
+  title,
   image,
   likeCount,
   hasLiked,
@@ -38,8 +39,8 @@ const PostCard = ({
       </div>
 
       {/* Content */}
-      <div className={styles.content}>
-        <p>{content}</p>
+      <div className={styles.title}>
+        <p>{title}</p>
         {image && <img src={image} alt="Post" className={styles.postImage} />}
       </div>
 

@@ -61,6 +61,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../contexts/AuthContext";
+import { fetchWithAuth } from "../../../../utils/userHelpers";
 
 function Login() {
    const [username, setUsername] = useState("");
@@ -87,6 +88,8 @@ function Login() {
       alert(err.message);
     }
   };
+
+  // useEffect(() => {}, []);
 
   return (
     <form onSubmit={handleLogin}>

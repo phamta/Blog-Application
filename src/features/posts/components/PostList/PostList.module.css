@@ -1,0 +1,35 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* ✅ chỉ 3 cột */
+  gap: 30px; /* ✅ tăng khoảng cách giữa các card */
+  justify-items: center;
+  align-items: start;
+  padding: 30px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ PostCard chiếm toàn bộ chiều rộng của 1 cột */
+.grid > * {
+  width: 100%;
+  max-width: 360px; /* ✅ mỗi card rộng hơn */
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.grid > *:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ responsive: khi màn hình nhỏ hơn 1024px thì 2 cột, nhỏ hơn 640px thì 1 cột */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

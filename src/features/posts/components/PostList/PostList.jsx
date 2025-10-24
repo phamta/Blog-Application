@@ -1,17 +1,18 @@
 import React from "react";
 import PostCard from "../../../../components/ui/PostCard/PostCard";
+import styles from "./PostList.module.css";
 
 function PostList({ posts, onLike, onComment, onShare }) {
   return (
-    <>
+    <div className={styles.grid}>
       {posts.map((p) => (
         <PostCard
           key={p.id}
           postId={p.id}
-          avatar={p.userAvatar || "/default-avatar.png"}
-          username={p.username || "Ẩn danh"}
+          avatar={p.author.imageUrl || "/default-avatar.png"}
+          username={p.author.username || "Ẩn danh"}
           time={new Date(p.createdAt).toLocaleString()}
-          content={p.content}
+          title={p.title}
           image={p.imageUrl}
           likeCount={p.likeCount || 0}
           hasLiked={p.hasLiked || false}
@@ -21,7 +22,7 @@ function PostList({ posts, onLike, onComment, onShare }) {
           // onShare={() => onShare(p.id)}
         />
       ))}
-    </>
+    </div>
   );
 }
 
