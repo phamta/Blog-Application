@@ -2,18 +2,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  gap: 251px;
-
+  padding: 12px 24px;
   width: 100%;
-  height: 58px;
-  margin: 30px auto;
-
+  max-width: 1200px; /* ✅ giới hạn chiều rộng tối đa */
+  margin: 20px auto; /* căn giữa */
   background: #ffffff;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.04),
     0px 8px 16px rgba(0, 0, 0, 0.08);
   border-radius: 8px;
   font-family: "Product Sans", Arial, sans-serif;
+  flex-wrap: wrap; /* ✅ giúp co giãn khi màn hình nhỏ */
 }
 
 /* Logo */
@@ -30,22 +28,25 @@
 
 .logoText {
   font-weight: 700;
-  font-size: 32px;
-  line-height: 40px;
+  font-size: 24px;
+  line-height: 1.2;
   color: #252525;
 }
 
 /* Menu */
 .menu {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   list-style: none;
   padding: 0;
   margin: 0;
+  flex-wrap: wrap; /* ✅ responsive */
+  justify-content: center;
+  flex: 1; /* ✅ cho menu chiếm không gian giữa */
 }
 
 .menuItem {
-  padding: 4px 10px;
+  padding: 4px 8px;
   font-size: 16px;
   font-weight: 400;
   color: #000;
@@ -53,6 +54,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: color 0.2s ease;
 }
 
 .menuItem:hover {
@@ -60,20 +62,16 @@
 }
 
 .active {
-  border-bottom: 2px solid #252525;
+  border-bottom: 2px solid #4c4ddc;
   font-weight: 700;
-  color: #252525;
-}
-
-.chevron {
-  font-size: 12px;
+  color: #4c4ddc;
 }
 
 /* Actions */
 .actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .notifBtn {
@@ -91,8 +89,36 @@
 }
 
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+/* ✅ Responsive cho màn nhỏ */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .menu {
+    order: 3;
+    justify-content: center;
+  }
+
+  .actions {
+    order: 2;
+  }
+
+  .logo {
+    order: 1;
+  }
+}
+
+.notifBtn:hover svg {
+  color: #6a6aff;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
 }
