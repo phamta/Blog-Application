@@ -56,6 +56,19 @@
             }
         }
 
+        // ✅ Lấy thông tin chi tiết bài viết dưới dạng PostCardDTO
+        @GetMapping("/{postId}")
+        public ResponseEntity<?> getPostById(@PathVariable Long postId) {
+            System.out.println("Get post");
+            try {
+                PostCardDTO post = postService.getPostById(postId);
+                return ResponseEntity.ok(post);
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", e.getMessage()));
+            }
+        }
+
         // API lấy danh sách bài viết theo userId
         @GetMapping("/user/{userId}")
         public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Long userId) {

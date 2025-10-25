@@ -94,6 +94,17 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    // Lấy post dưới dạng PostCardDTO theo id
+    public PostCardDTO getPostById(Long postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (postOptional.isEmpty()) {
+            throw new RuntimeException("Post not found");
+        }
+
+        Post post = postOptional.get();
+        return convertToPostCardDTO(post);
+    }
+
     private PostCardDTO convertToPostCardDTO(Post post) {
         User author = post.getAuthor();
         UserSummaryDTO authorDTO = new UserSummaryDTO(
