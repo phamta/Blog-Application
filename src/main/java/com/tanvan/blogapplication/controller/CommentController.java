@@ -1,9 +1,9 @@
 package com.tanvan.blogapplication.controller;
 
+import com.tanvan.blogapplication.dto.CommentResponse;
 import com.tanvan.blogapplication.dto.CommentRequest;
 import com.tanvan.blogapplication.entity.Comment;
 import com.tanvan.blogapplication.service.CommentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +41,7 @@ public class CommentController {
     @GetMapping("/post/{postId}")
     public ResponseEntity<?> getCommentsByPost(@PathVariable Long postId) {
         try {
-            List<Comment> comments = commentService.getCommentsByPost(postId);
+            List<CommentResponse> comments = commentService.getCommentsByPost(postId);
             return ResponseEntity.ok(comments);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
