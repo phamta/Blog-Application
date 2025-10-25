@@ -1,0 +1,131 @@
+/* --- Overlay (lớp nền mờ toàn màn hình) --- */
+.overlay {
+  position: fixed;          /* luôn nằm phủ lên toàn màn hình */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 9998;            /* cao hơn phần còn lại */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Modal content --- */
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 9999;            /* cao hơn overlay */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.3s ease; /* hiệu ứng nhẹ */
+}
+
+/* --- Animation xuất hiện --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.postImage {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.commentSection {
+  margin-top: 20px;
+}
+
+.commentItem {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.commentInput {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.commentInput input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.commentInput button {
+  padding: 8px 12px;
+  border: none;
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.commentInput button:hover {
+  background: #0056b3;
+}
+
+.commentInput {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.commentInput .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.commentInput input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.commentInput button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.commentInput button:hover {
+  background: #0056b3;
+}

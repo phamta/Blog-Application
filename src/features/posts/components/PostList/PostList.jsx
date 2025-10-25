@@ -18,7 +18,7 @@ function PostList({ posts, onLike, onComment, onShare }) {
           hasLiked={p.hasLiked || false}
           commentCount={p.commentCount || 0}
           onLike={(liked) => onLike(p.id, liked)}
-          // onComment={() => onComment(p.id)}
+          onComment={() => onComment(p.id)}
           // onShare={() => onShare(p.id)}
         />
       ))}

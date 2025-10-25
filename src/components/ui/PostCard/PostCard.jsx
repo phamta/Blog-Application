@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./PostCard.module.css";
-import { FaHeart, FaRegHeart, FaComment } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaComment, FaShare } from "react-icons/fa";
 // import {FaHeart} from "lucide-react";
 
 const PostCard = ({
@@ -14,6 +14,7 @@ const PostCard = ({
   hasLiked,
   commentCount,
   onLike,
+  onComment,
 }) => {
   const [isLiked, setIsLiked] = useState(hasLiked);
   const [likes, setLikes] = useState(likeCount);
@@ -56,7 +57,8 @@ const PostCard = ({
             <span className={styles.likeTotal}>{likes}</span>
           </button>
 
-          <button className={styles.commentButton}>
+          <button className={styles.commentButton}
+          onClick={() => onComment && onComment(postId)}>
             <FaComment className={styles.commentIcon} />
             <span className={styles.commentTotal}>{commentCount}</span>
           </button>

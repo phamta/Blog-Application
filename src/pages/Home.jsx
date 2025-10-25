@@ -7,12 +7,13 @@ import { getUserIdFromToken } from "../utils/jwtHelper";
 import PostList from "../features/posts/components/PostList/PostList";
 import Navbar from "../components/layout/Navbar/Navbar";
 import styles from "./Home.module.css";
-
+import PostModal from "../components/ui/Modal/PostModal";
 
 function Home() {
   const { accessToken, handleRefreshToken } = useAuth();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef(null);
@@ -108,8 +109,12 @@ function Home() {
 
   // ✅ Xử lý comment
   const handleComment = (postId) => {
-    console.log("Mở khung comment cho post:", postId);
-    // Có thể mở modal comment ở đây
+    console.log("Mở modal bình luận cho bài viết ID:", postId);
+    setSelectedPostId(postId);
+  };
+
+  const closeModal = () => {
+    setSelectedPostId(null);
   };
 
   // ✅ Xử lý share
@@ -123,7 +128,7 @@ function Home() {
     <>
       <Navbar />
 
-      <div >
+      <div>
         <h2>Trang chủ</h2>
         {user ? <p>Xin chào, {user.username}</p> : <p>Đang tải...</p>}
 
@@ -131,7 +136,7 @@ function Home() {
         <PostList
           posts={posts}
           onLike={handleLike}
-          // onComment={handleComment}
+          onComment={handleComment}
           // onShare={handleShare}
         />
 
@@ -143,6 +148,14 @@ function Home() {
           <p style={{ textAlign: "center" }}>Hết bài rồi 🎉</p>
         )}
       </div>
+
+      {selectedPostId && (
+        <PostModal
+          postId={selectedPostId}
+          onClose={closeModal}
+          accessToken={accessToken}
+        />
+      )}
     </>
   );
 }
