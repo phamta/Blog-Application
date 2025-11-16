@@ -6,12 +6,15 @@ import com.tanvan.blogapplication.service.UserService;
 import com.tanvan.blogapplication.util.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController

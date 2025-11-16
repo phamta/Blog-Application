@@ -77,70 +77,65 @@
 package com.tanvan.blogapplication.filter;
 
 import com.tanvan.blogapplication.util.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Component
-public class JwtRequestFilter implements Filter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
-            throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        setCorsHeaders(response); // ✅ Đảm bảo luôn có header
-
-        // Xử lý preflight request (OPTIONS)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
+        // ✅ Bỏ qua các endpoint public
+        String path = request.getRequestURI();
+        if (path.startsWith("/api/auth/") ||
+                path.startsWith("/oauth2/") ||
+                path.startsWith("/login/") ||
+                path.equals("/error")) {
+            filterChain.doFilter(request, response);
             return;
         }
 
-        final String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            setCorsHeaders(response); // 🔁 Gọi lại để chắc chắn header có mặt
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Thiếu hoặc sai định dạng token");
-            return;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            try {
+                String token = authHeader.substring(7);
+
+                if (!jwtUtil.isTokenExpired(token)) {
+                    Long userId = jwtUtil.extractClaims(token).get("userId", Long.class);
+
+                    // ✅ Tạo authentication object
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    // ✅ Set vào SecurityContext
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                System.err.println("JWT Authentication error: " + e.getMessage());
+                // ❌ KHÔNG return ở đây, để Spring Security xử lý
+            }
         }
 
-        try {
-            String token = authHeader.substring(7);
-            Claims claims = jwtUtil.extractClaims(token);
-            request.setAttribute("userId", claims.get("userId"));
-
-            chain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            setCorsHeaders(response); // 🔁 Bổ sung ở lỗi
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token đã hết hạn");
-        } catch (Exception e) {
-            setCorsHeaders(response); // 🔁 Bổ sung ở lỗi
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token không hợp lệ: " + e.getMessage());
-        }
+        filterChain.doFilter(request, response);
     }
-
-
-
-    private void setCorsHeaders(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-    }
-
 }

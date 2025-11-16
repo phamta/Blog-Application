@@ -54,6 +54,10 @@ public class UserService {
         return Optional.empty();
     }
 
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User createUser(User user, MultipartFile image) {
         user.setPassword(user.getPassword());
 
@@ -136,6 +140,43 @@ public class UserService {
                     }
                     return new UserSummaryDTO(user.getId(), user.getUsername(), imageUrl);
                 });
+    }
+
+    public User createUserFromGoogle(String email, String name, Object unused) {
+
+        // Nếu đã tồn tại user → trả về luôn
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            return existingUser.get();
+        }
+
+        // Nếu chưa có → tạo mới
+        User user = new User();
+        user.setEmail(email);
+
+        // Username có thể trùng → xử lý tránh conflict
+        String baseUsername = name.replaceAll("\\s+", "").toLowerCase();
+        String uniqueUsername = baseUsername;
+        int counter = 1;
+
+        while (userRepository.findByUsername(uniqueUsername).isPresent()) {
+            uniqueUsername = baseUsername + counter;
+            counter++;
+        }
+
+        user.setUsername(uniqueUsername);
+
+        // Google login → không dùng password
+        user.setPassword(null);
+
+        // Không có ảnh từ Google (nếu muốn sau này update avatar từ Google API)
+        user.setImageData(null);
+        user.setImageType(null);
+
+        // Nếu trong entity có trường provider
+        // user.setAuthProvider("GOOGLE");
+
+        return userRepository.save(user);
     }
 
 }
