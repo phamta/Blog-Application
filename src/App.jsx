@@ -1,8 +1,14 @@
 // src/App.jsx
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
-import { refreshAccessToken } from "./utils/userHelpers";
+import { refreshAccessToken } from "./utils/tokenHelpers";
 import Login from "./features/auth/components/Login/Login";
 import Home from "./pages/Home";
 
@@ -18,7 +24,9 @@ function AppContent() {
         const newToken = await refreshAccessToken(); // gọi API refresh
         setAccessToken(newToken);
       } catch (err) {
-        console.warn("Refresh token hết hạn hoặc không tồn tại → chuyển về login");
+        console.warn(
+          "Refresh token hết hạn hoặc không tồn tại → chuyển về login"
+        );
         navigate("/login");
       } finally {
         setLoading(false);
@@ -28,7 +36,10 @@ function AppContent() {
     tryRefresh();
   }, [navigate, setAccessToken]);
 
-  if (loading) return <div style={{ padding: "2rem" }}>Đang kiểm tra phiên đăng nhập...</div>;
+  if (loading)
+    return (
+      <div style={{ padding: "2rem" }}>Đang kiểm tra phiên đăng nhập...</div>
+    );
 
   return (
     <>
@@ -37,13 +48,7 @@ function AppContent() {
         {/* Nếu chưa có token → tự động điều hướng sang login */}
         <Route
           path="/"
-          element={
-            accessToken ? (
-              <Home />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
+          element={accessToken ? <Home /> : <Navigate to="/login" replace />}
         />
       </Routes>
     </>

@@ -1,25 +1,37 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState } from "react";
-import { refreshAccessToken } from "../utils/userHelpers";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null);
 
-  // Hàm logout (xóa token)
-  const logout = () => {
+  // Hàm logout
+  const logout = async () => {
     setAccessToken(null);
-    // Có thể gọi API logout nếu backend hỗ trợ
-    // fetch("http://localhost:8080/api/logout", { method: "POST", credentials: "include" });
+    try {
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // cookie gửi kèm
+      });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
-  // Hàm lấy token mới khi cần (ví dụ lúc fetchWithAuth gặp 401)
-  const handleRefreshToken = async () => {
+  // Refresh token từ backend
+  const refreshAccessToken = async () => {
     try {
-      const newToken = await refreshAccessToken();
-      setAccessToken(newToken);
-      return newToken;
+      const res = await fetch("http://localhost:8080/api/auth/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Refresh failed");
+
+      const data = await res.json();
+      setAccessToken(data.accessToken);
+      return data.accessToken;
     } catch (err) {
       console.error("Refresh token failed:", err);
       logout();
@@ -28,7 +40,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, logout, handleRefreshToken }}>
+    <AuthContext.Provider value={{ accessToken, setAccessToken, logout, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );

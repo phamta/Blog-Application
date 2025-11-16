@@ -2,15 +2,16 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { fetchWithAuth } from "../utils/userHelpers";
+import { fetchWithAuth } from "../utils/tokenHelpers";
 import { getUserIdFromToken } from "../utils/jwtHelper";
 import PostList from "../features/posts/components/PostList/PostList";
 import Navbar from "../components/layout/Navbar/Navbar";
 import styles from "./Home.module.css";
 import PostModal from "../components/ui/Modal/PostModal";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Home() {
-  const { accessToken, handleRefreshToken } = useAuth();
+  const { accessToken, setAccessToken ,handleRefreshToken } = useAuth();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [selectedPostId, setSelectedPostId] = useState(null);
@@ -18,6 +19,18 @@ function Home() {
   const [hasMore, setHasMore] = useState(true);
   const loader = useRef(null);
   const size = 5;
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    if (token) {
+      setAccessToken(token);          // lưu token vào context
+      navigate("/", { replace: true }); // xóa query param
+    }
+  }, [location, navigate, setAccessToken]);
 
   // ✅ Lấy thông tin user
   useEffect(() => {
@@ -28,10 +41,13 @@ function Home() {
     const loadUser = async () => {
       try {
         const data = await fetchWithAuth(
-          `http://localhost:8080/api/user/sumary/${userId}`,
+          `http://localhost:8080/api/user/summary/${userId}`,
           accessToken,
           handleRefreshToken
         );
+        console.log("Thông tin user tải về:", data);
+        console.log("User ID từ token:", userId);
+        console.log("Link avatar đầy đủ:", data.imageUrl);
         setUser(data);
       } catch (err) {
         console.error(err.message);
@@ -126,7 +142,7 @@ function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar avatar={user.imageUrl}/>
 
       <div>
         <h2>Trang chủ</h2>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { fetchWithAuth } from "../../../../utils/userHelpers";
 import styles from "./Login.module.css";
 import { UserCircle, Lock } from "lucide-react";
 
@@ -29,6 +28,12 @@ function Login() {
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  // Login với Google
+  const handleGoogleLogin = () => {
+    // Redirect trực tiếp tới Spring Security OAuth2 endpoint
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
   };
 
   return (
@@ -74,6 +79,15 @@ function Login() {
               Don't have an account? <a href="#">Register</a>
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className={styles.btn}
+            style={{ marginTop: "10px", backgroundColor: "#4285F4" }}
+          >
+            Login with Google
+          </button>
         </form>
       </div>
     </div>
